@@ -1,0 +1,35 @@
+# GenLayer Builder Submission
+
+## Project: GenlayerVerifyLayer
+
+**Submitted by:** johnfinley2f  
+**Date:** 2026  
+**Contract Address:** `0x0D1A1f2889897cFCb440A194fedaeC131101E0E8`  
+**Network:** Asimov Mainnet  
+
+## Checklist
+
+- [x] GitHub repository public
+- [x] README.md complete
+- [x] GenLayer Intelligent Contract deployed
+- [x] Contract address documented
+- [x] Frontend demo live
+- [x] Dummy wallet connect working
+- [x] 1 GEN transaction simulation
+- [x] Consensus flow demonstrated
+- [x] No real transactions sent
+
+## Contract Details
+
+- **File:** `contracts/GenlayerVerifyLayer.py`
+- **Class:** `GenlayerVerifyLayer`
+- **Methods:** `verify_from_page`, `get_status`, `get_total_checks`
+
+## Demo Flow
+
+1. Open live demo
+2. Click "Connect Dummy Wallet"
+3. View GenLayer status + eligible tokens
+4. Click "Send 1 GEN" — watch 4-step consensus
+5. View transaction hash + history
+6. Click "Open GenLayer Studio" to interact with contract
