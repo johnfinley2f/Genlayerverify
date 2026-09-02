@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GenlayerVerifyLayer — Contract Verify</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:          #0c0c0c;
+  --surface:     #141414;
+  --surface2:    #1a1a1a;
+  --border:      #222;
+  --border2:     #2a2a2a;
+  --lime:        #b8f000;
+  --lime-dim:    rgba(184,240,0,0.12);
+  --lime-border: rgba(184,240,0,0.3);
+  --text:        #f2f2f2;
+  --muted:       #555;
+  --sub:         #888;
+  --green:       #22c55e;
+  --red:         #ff4444;
+}
+
+html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; }
+
+/* TOPBAR */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0;
+  background: rgba(12,12,12,0.94);
+  backdrop-filter: blur(16px);
+  z-index: 100;
+}
+
+.brand { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--sub); text-transform: uppercase; }
+.brand-dot { width: 22px; height: 22px; border-radius: 6px; background: var(--lime); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #000; font-weight: 700; }
+
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.node-pill { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--sub); padding: 5px 10px; border: 1px solid var(--border2); border-radius: 100px; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); animation: blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.wallet-btn-top { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface); color: var(--sub); font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+.wallet-btn-top:hover { border-color: var(--lime-border); color: var(--lime); }
+.wallet-btn-top.connected { border-color: var(--lime-border); background: var(--lime-dim); color: var(--lime); }
+
+/* HERO */
+.hero { padding: 48px 20px 36px; max-width: 700px; margin: 0 auto; }
+.hero-eyebrow { font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.hero-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--muted); }
+.hero-title { font-size: clamp(32px,8vw,52px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px; }
+.hero-title .accent { color: var(--lime); }
+.hero-desc { font-size: 14px; color: var(--sub); line-height: 1.6; max-width: 380px; }
+
+/* CONTRACT BADGE */
+.contract-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 16px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--lime-border);
+  background: var(--lime-dim);
+  font-size: 11px;
+  color: var(--lime);
+}
+.contract-badge span { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+/* GRID */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; border: 1px solid var(--border); margin: 0 20px 20px; border-radius: 16px; overflow: hidden; max-width: 700px; margin-left: auto; margin-right: auto; }
+.panel { background: var(--surface); padding: 24px; }
+.panel.dark { background: #0e0e0e; }
+.panel.full { grid-column: span 2; }
+
+.panel-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
+.panel-eyebrow .num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); }
+
+/* WALLET */
+.wallet-status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.wallet-icon-big { width: 44px; height: 44px; border-radius: 12px; background: var(--surface2); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; transition: all 0.3s; }
+.wallet-icon-big.connected { background: var(--lime-dim); border-color: var(--lime-border); }
+.wallet-status-label { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+.wallet-status-val { font-size: 14px; font-weight: 600; color: var(--sub); font-family: 'JetBrains Mono', monospace; }
+.wallet-status-val.connected { color: var(--lime); }
+
+.balance-block { margin-bottom: 20px; }
+.bal-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.bal-row { display: flex; align-items: baseline; gap: 6px; }
+.bal-num { font-size: 38px; font-weight: 700; letter-spacing: -0.03em; color: var(--text); line-height: 1; }
+.bal-unit { font-size: 16px; font-weight: 600; color: var(--lime); }
+.bal-usd { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+.btn-connect { width: 100%; padding: 13px; border-radius: 10px; border: 1px solid var(--lime-border); background: var(--lime-dim); color: var(--lime); font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; margin-bottom: 8px; }
+.btn-connect:hover { background: rgba(184,240,0,0.2); box-shadow: 0 0 20px rgba(184,240,0,0.1); }
+.btn-ghost { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border2); background: transparent; color: var(--muted); font-family: 'Space Grotesk', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s; display: none; }
+.btn-ghost:hover { border-color: var(--red); color: var(--red); }
+
+/* STATUS */
+.status-items { display: flex; flex-direction: column; gap: 12px; }
+.srow { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.srow:last-child { border-bottom: none; padding-bottom: 0; }
+.srow-lbl { font-size: 12px; color: var(--muted); }
+.srow-val { font-size: 13px; font-weight: 600; color: var(--sub); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 100px; font-size: 12px; font-weight: 600; }
+.tag-lime  { background: var(--lime-dim); color: var(--lime); border: 1px solid var(--lime-border); }
+.tag-white { background: rgba(255,255,255,0.06); color: var(--sub); border: 1px solid var(--border2); }
+
+.vnodes { display: flex; gap: 4px; margin-top: 14px; }
+.vnode { flex: 1; height: 3px; border-radius: 100px; background: var(--border2); transition: background 0.5s ease; }
+.vnode.on { background: var(--lime); }
+
+/* TX */
+.tx-detail-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+.tx-from-lbl { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+.tx-from-addr { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--sub); }
+.tx-arrow { font-size: 18px; color: var(--muted); }
+.tx-amount-num { font-size: 22px; font-weight: 700; color: var(--lime); }
+.tx-amount-lbl { font-size: 11px; color: var(--muted); text-align: right; }
+
+.steps { display: flex; flex-direction: column; gap: 0; margin-bottom: 14px; position: relative; }
+.steps::before { content: ''; position: absolute; left: 14px; top: 24px; bottom: 24px; width: 1px; background: var(--border2); }
+.step { display: flex; align-items: flex-start; gap: 12px; padding: 9px 0; opacity: 0.28; transition: opacity 0.35s; position: relative; z-index: 1; }
+.step.active, .step.done { opacity: 1; }
+.step-dot { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border2); background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--muted); flex-shrink: 0; transition: all 0.35s; font-family: 'JetBrains Mono', monospace; }
+.step.active .step-dot { border-color: var(--lime); color: var(--lime); background: var(--lime-dim); animation: step-pulse 1.5s ease-in-out infinite; }
+.step.done .step-dot { border-color: var(--lime); background: var(--lime); color: #000; font-weight: 700; }
+@keyframes step-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(184,240,0,0.3)} 50%{box-shadow:0 0 0 6px rgba(184,240,0,0)} }
+.step-info { padding-top: 4px; }
+.step-title { font-size: 13px; font-weight: 600; margin-bottom: 1px; }
+.step-desc  { font-size: 11px; color: var(--muted); }
+
+.hash-box { background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; display: none; }
+.hash-box.show { display: block; }
+.hash-box-lbl { font-size: 10px; color: var(--muted); margin-bottom: 5px; letter-spacing: 0.05em; }
+.hash-box-val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--lime); word-break: break-all; line-height: 1.6; }
+.hash-meta { display: flex; gap: 14px; margin-top: 8px; flex-wrap: wrap; }
+.hm { font-size: 11px; color: var(--muted); }
+.hm span { color: var(--sub); font-weight: 500; }
+
+.btn-send { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--lime-border); background: var(--lime); color: #000; font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+.btn-send:hover { background: #c8f520; box-shadow: 0 0 24px rgba(184,240,0,0.2); }
+.btn-send:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+.success-strip { border: 1px solid rgba(34,197,94,0.25); background: rgba(34,197,94,0.06); border-radius: 10px; padding: 14px; text-align: center; display: none; margin-top: 12px; }
+.success-strip.show { display: block; }
+.success-strip .s-title { font-size: 15px; font-weight: 700; color: var(--green); margin-bottom: 3px; }
+.success-strip .s-sub   { font-size: 12px; color: var(--muted); }
+
+/* NEXT */
+.next-title { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 10px; }
+.next-title .accent { color: var(--lime); }
+.next-desc { font-size: 13px; color: var(--sub); line-height: 1.6; margin-bottom: 14px; }
+.contract-addr-box { background: var(--surface2); border: 1px solid var(--lime-border); border-radius: 8px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--lime); margin-bottom: 14px; word-break: break-all; }
+.btn-studio { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border2); background: var(--surface2); color: var(--sub); font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+.btn-studio:hover { border-color: var(--lime-border); color: var(--lime); }
+
+/* HISTORY */
+.tx-rows { display: flex; flex-direction: column; gap: 6px; }
+.tx-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
+.tx-row-hash { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--sub); }
+.tx-row-block { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.tx-row-amt { font-size: 14px; font-weight: 700; color: var(--lime); }
+.tx-row-time { font-size: 11px; color: var(--muted); text-align: right; }
+.empty-state { text-align: center; padding: 24px; color: var(--muted); font-size: 13px; }
+
+/* BOTTOMBAR */
+.bottombar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--muted); max-width: 700px; margin: 20px auto 0; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); background: rgba(20,20,20,0.95); border: 1px solid var(--border2); backdrop-filter: blur(20px); color: var(--text); font-size: 13px; font-weight: 500; padding: 10px 20px; border-radius: 100px; z-index: 999; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 540px) {
+  .grid { grid-template-columns: 1fr; margin: 0 12px 12px; }
+  .panel.full { grid-column: span 1; }
+  .hero { padding: 28px 16px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-dot">⬡</div>
+    GenlayerVerifyLayer
+  </div>
+  <div class="topbar-right">
+    <div class="node-pill"><div class="live-dot"></div>nodes responding</div>
+    <button class="wallet-btn-top" id="topWalletBtn" onclick="connectWallet()">⬡ Connect Wallet</button>
+  </div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-eyebrow">Client-side network check</div>
+  <div class="hero-title">Know the address<br>before you trust<br><span class="accent">the route.</span></div>
+  <div class="hero-desc">A focused desk for checking whether a GenLayer intelligent contract address is reachable — and which network is answering back.</div>
+  <div class="contract-badge">
+    ✓ Deployed Contract &nbsp;
+    <span id="deployedAddr">0x0D1A1f2889897cFCb440A194fedaeC131101E0E8</span>
+  </div>
+</div>
+
+<!-- Grid -->
+<div class="grid">
+
+  <!-- Wallet -->
+  <div class="panel">
+    <div class="panel-eyebrow"><span>Wallet</span><span class="num">01</span></div>
+    <div class="wallet-status-row">
+      <div class="wallet-icon-big" id="walletIcon">👛</div>
+      <div>
+        <div class="wallet-status-label">Status</div>
+        <div class="wallet-status-val" id="walletStatusVal">Not connected</div>
+      </div>
+    </div>
+    <div class="balance-block" id="balanceBlock" style="display:none">
+      <div class="bal-label">Balance</div>
+      <div class="bal-row">
+        <span class="bal-num" id="balNum">125.4</span>
+        <span class="bal-unit">GEN</span>
+      </div>
+      <div class="bal-usd" id="balUsd">≈ $102.83 USD</div>
+    </div>
+    <button class="btn-connect" id="connectBtn" onclick="connectWallet()">⬡ Connect Dummy Wallet</button>
+    <button class="btn-ghost" id="disconnectBtn" onclick="disconnectWallet()">Disconnect wallet</button>
+  </div>
+
+  <!-- Status -->
+  <div class="panel dark">
+    <div class="panel-eyebrow"><span>GenLayer Status</span><span class="num">02</span></div>
+    <div class="status-items">
+      <div class="srow"><span class="srow-lbl">Network</span><span class="tag tag-lime">Asimov Mainnet</span></div>
+      <div class="srow"><span class="srow-lbl">Eligibility</span><span class="tag tag-lime" id="eligTag">— Connect wallet</span></div>
+      <div class="srow"><span class="srow-lbl">Eligible tokens</span><span class="srow-val" id="eligTokens">—</span></div>
+      <div class="srow"><span class="srow-lbl">Contract</span><span class="srow-val">0x0D1A...E0E8</span></div>
+      <div class="srow"><span class="srow-lbl">Validator set</span><span class="tag tag-white">Bradbury Testnet</span></div>
+    </div>
+    <div class="vnodes" id="vnodes">
+      <div class="vnode"></div><div class="vnode"></div><div class="vnode"></div>
+      <div class="vnode"></div><div class="vnode"></div>
+    </div>
+  </div>
+
+  <!-- Transaction -->
+  <div class="panel">
+    <div class="panel-eyebrow"><span>Send 1 GEN Transaction</span><span class="num">03</span></div>
+    <div class="tx-detail-row">
+      <div>
+        <div class="tx-from-lbl">From</div>
+        <div class="tx-from-addr" id="txFromAddr">— connect wallet</div>
+      </div>
+      <div class="tx-arrow">→</div>
+      <div style="text-align:right">
+        <div class="tx-amount-num">1 GEN</div>
+        <div class="tx-amount-lbl">≈ $0.82 USD</div>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step" id="s1"><div class="step-dot">1</div><div class="step-info"><div class="step-title">Prepare</div><div class="step-desc">Build transfer payload</div></div></div>
+      <div class="step" id="s2"><div class="step-dot">2</div><div class="step-info"><div class="step-title">Simulate</div><div class="step-desc">Validators independently execute</div></div></div>
+      <div class="step" id="s3"><div class="step-dot">3</div><div class="step-info"><div class="step-title">Consensus</div><div class="step-desc">5/5 validators agree</div></div></div>
+      <div class="step" id="s4"><div class="step-dot">4</div><div class="step-info"><div class="step-title">Confirmed</div><div class="step-desc">1 GEN written on-chain</div></div></div>
+    </div>
+    <div class="hash-box" id="hashBox">
+      <div class="hash-box-lbl">Transaction Hash</div>
+      <div class="hash-box-val" id="hashVal"></div>
+      <div class="hash-meta">
+        <div class="hm">Block <span id="blockNum">#—</span></div>
+        <div class="hm">Gas <span>21,000</span></div>
+        <div class="hm">Fee <span>0.0002 GEN</span></div>
+        <div class="hm">Status <span style="color:#22c55e" id="txStatus">—</span></div>
+      </div>
+    </div>
+    <button class="btn-send" id="sendBtn" onclick="sendTx()" disabled>Connect wallet to send</button>
+    <div class="success-strip" id="successStrip">
+      <div class="s-title">✓ Transaction Confirmed</div>
+      <div class="s-sub" id="successSub">1 GEN sent on Asimov Mainnet</div>
+    </div>
+  </div>
+
+  <!-- Next Step -->
+  <div class="panel dark">
+    <div class="panel-eyebrow"><span>Next Step</span><span class="num">04</span></div>
+    <div class="next-title">Test it in<br><span class="accent">Studio.</span></div>
+    <div class="next-desc">Contract deployed and ready. Open GenLayer Studio to interact with your Intelligent Contract directly.</div>
+    <div class="contract-addr-box">0x0D1A1f2889897cFCb440A194fedaeC131101E0E8</div>
+    <a class="btn-studio" href="https://studio.genlayer.com" target="_blank">Open GenLayer Studio <span>↗</span></a>
+  </div>
+
+  <!-- History -->
+  <div class="panel full">
+    <div class="panel-eyebrow"><span>Transaction History</span><span class="num">05</span></div>
+    <div class="tx-rows" id="txRows">
+      <div class="empty-state">No transactions yet. Connect wallet and send 1 GEN to start.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom -->
+<div class="bottombar">
+  <span>GenlayerVerifyLayer · Asimov Mainnet · 0x0D1A...E0E8</span>
+  <span style="display:flex;align-items:center;gap:6px">
+    <span style="width:6px;height:6px;border-radius:50%;background:#b8f000;display:inline-block"></span>
+    Browser storage active
+  </span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CONTRACT_ADDRESS = "0x0D1A1f2889897cFCb440A194fedaeC131101E0E8";
+let connected = false, walletAddr = '', balance = 125.4, txRunning = false, txLog = [];
+
+function randAddr() { return '0x'+Array.from({length:40},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join(''); }
+function randHash() { return '0x'+Array.from({length:64},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join(''); }
+function short(a) { return a.slice(0,6)+'...'+a.slice(-4); }
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+function connectWallet() {
+  if(connected) return;
+  walletAddr = randAddr(); connected = true;
+  const tb = document.getElementById('topWalletBtn');
+  tb.textContent = '✓ '+short(walletAddr); tb.classList.add('connected'); tb.onclick = null;
+  document.getElementById('walletIcon').textContent = '🔐';
+  document.getElementById('walletIcon').classList.add('connected');
+  document.getElementById('walletStatusVal').textContent = short(walletAddr);
+  document.getElementById('walletStatusVal').classList.add('connected');
+  document.getElementById('balanceBlock').style.display = 'block';
+  updateBal();
+  document.getElementById('connectBtn').style.display = 'none';
+  document.getElementById('disconnectBtn').style.display = 'block';
+  document.getElementById('eligTag').textContent = '✓ Eligible';
+  document.getElementById('eligTokens').textContent = '105.3 GEN';
+  animateV();
+  document.getElementById('txFromAddr').textContent = short(walletAddr);
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('sendBtn').textContent = 'Send 1 GEN';
+  showToast('Wallet connected · '+short(walletAddr));
+}
+
+function disconnectWallet() {
+  connected = false; balance = 125.4; txLog = [];
+  const tb = document.getElementById('topWalletBtn');
+  tb.textContent = '⬡ Connect Wallet'; tb.classList.remove('connected'); tb.onclick = connectWallet;
+  document.getElementById('walletIcon').textContent = '👛';
+  document.getElementById('walletIcon').classList.remove('connected');
+  document.getElementById('walletStatusVal').textContent = 'Not connected';
+  document.getElementById('walletStatusVal').classList.remove('connected');
+  document.getElementById('balanceBlock').style.display = 'none';
+  document.getElementById('connectBtn').style.display = 'block';
+  document.getElementById('disconnectBtn').style.display = 'none';
+  document.getElementById('eligTag').textContent = '— Connect wallet';
+  document.getElementById('eligTokens').textContent = '—';
+  document.querySelectorAll('.vnode').forEach(v=>v.classList.remove('on'));
+  document.getElementById('txFromAddr').textContent = '— connect wallet';
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('sendBtn').textContent = 'Connect wallet to send';
+  document.getElementById('hashBox').classList.remove('show');
+  document.getElementById('successStrip').classList.remove('show');
+  resetSteps(); renderHistory();
+  showToast('Wallet disconnected');
+}
+
+function updateBal() {
+  document.getElementById('balNum').textContent = balance.toFixed(1);
+  document.getElementById('balUsd').textContent = '≈ $'+(balance*0.82).toFixed(2)+' USD';
+}
+
+function animateV() {
+  document.querySelectorAll('.vnode').forEach((n,i)=>setTimeout(()=>n.classList.add('on'),i*180));
+}
+
+function resetSteps() {
+  ['s1','s2','s3','s4'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.classList.remove('active','done');
+    el.querySelector('.step-dot').textContent=i+1;
+  });
+  if(connected){document.getElementById('sendBtn').disabled=false;document.getElementById('sendBtn').textContent='Send 1 GEN';}
+  txRunning=false;
+}
+
+function setStep(id,state) {
+  const el=document.getElementById(id);
+  el.classList.remove('active','done');
+  if(state==='active') el.classList.add('active');
+  if(state==='done'){el.classList.add('done');el.querySelector('.step-dot').textContent='✓';}
+}
+
+async function sendTx() {
+  if(txRunning||!connected) return;
+  txRunning=true;
+  document.getElementById('sendBtn').disabled=true;
+  document.getElementById('sendBtn').textContent='Processing…';
+  document.getElementById('successStrip').classList.remove('show');
+  document.getElementById('hashBox').classList.remove('show');
+  resetSteps(); txRunning=true;
+  const hash=randHash(), block=Math.floor(Math.random()*900000+100000);
+  setStep('s1','active'); await sleep(700);
+  setStep('s1','done'); setStep('s2','active'); await sleep(1000);
+  setStep('s2','done'); setStep('s3','active'); await sleep(1100);
+  setStep('s3','done'); setStep('s4','active'); await sleep(900);
+  setStep('s4','done');
+  document.getElementById('hashVal').textContent=hash;
+  document.getElementById('blockNum').textContent='#'+block;
+  document.getElementById('txStatus').textContent='Confirmed';
+  document.getElementById('hashBox').classList.add('show');
+  balance=parseFloat((balance-1).toFixed(1)); updateBal();
+  document.getElementById('sendBtn').textContent='✓ Sent · Send again';
+  document.getElementById('sendBtn').disabled=false;
+  document.getElementById('successStrip').classList.add('show');
+  document.getElementById('successSub').textContent='1 GEN · Block #'+block+' · '+CONTRACT_ADDRESS.slice(0,10)+'...';
+  const now=new Date();
+  txLog.unshift({hash,block,time:now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')});
+  renderHistory();
+  showToast('✓ 1 GEN confirmed on-chain');
+  txRunning=false;
+}
+
+function renderHistory() {
+  const c=document.getElementById('txRows');
+  if(!txLog.length){c.innerHTML='<div class="empty-state">No transactions yet. Connect wallet and send 1 GEN to start.</div>';return;}
+  c.innerHTML=txLog.map(tx=>`
+    <div class="tx-row">
+      <div><div class="tx-row-hash">${tx.hash.slice(0,16)}…${tx.hash.slice(-8)}</div><div class="tx-row-block">Block #${tx.block}</div></div>
+      <div style="text-align:right"><div class="tx-row-amt">−1 GEN</div><div class="tx-row-time">${tx.time}</div></div>
+    </div>`).join('');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
+}
+</script>
+</body>
+</html>
