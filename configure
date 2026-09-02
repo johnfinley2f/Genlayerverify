@@ -1,0 +1,5 @@
+export const CONTRACT_ADDRESS = "0x0D1A1f2889897cFCb440A194fedaeC131101E0E8";
+export const NETWORK = "Asimov Mainnet";
+export const CHAIN_ID = "0x1A4";
+export const VALIDATOR_SET = "Bradbury Testnet";
+export const STUDIO_URL = "https://studio.genlayer.com";
