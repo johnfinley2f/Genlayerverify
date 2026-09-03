@@ -3,313 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GenlayerVerifyLayer — Contract Verify</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>GenlayerVerifyLayer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --bg:          #0c0c0c;
-  --surface:     #141414;
-  --surface2:    #1a1a1a;
-  --border:      #222;
-  --border2:     #2a2a2a;
-  --lime:        #b8f000;
-  --lime-dim:    rgba(184,240,0,0.12);
-  --lime-border: rgba(184,240,0,0.3);
-  --text:        #f2f2f2;
-  --muted:       #555;
-  --sub:         #888;
-  --green:       #22c55e;
-  --red:         #ff4444;
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0c0c0c;--s1:#141414;--s2:#1a1a1a;
+  --b1:#1e1e1e;--b2:#2a2a2a;
+  --lime:#b8f000;--limd:rgba(184,240,0,0.1);--limb:rgba(184,240,0,0.28);
+  --txt:#f0f0f0;--sub:#888;--mut:#444;
+  --grn:#22c55e;--red:#f43f5e
 }
-
-html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; }
+html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Space Grotesk',sans-serif}
 
 /* TOPBAR */
-.topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0;
-  background: rgba(12,12,12,0.94);
-  backdrop-filter: blur(16px);
-  z-index: 100;
-}
-
-.brand { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--sub); text-transform: uppercase; }
-.brand-dot { width: 22px; height: 22px; border-radius: 6px; background: var(--lime); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #000; font-weight: 700; }
-
-.topbar-right { display: flex; align-items: center; gap: 10px; }
-
-.node-pill { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--sub); padding: 5px 10px; border: 1px solid var(--border2); border-radius: 100px; }
-.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); animation: blink 2s ease-in-out infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-.wallet-btn-top { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface); color: var(--sub); font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
-.wallet-btn-top:hover { border-color: var(--lime-border); color: var(--lime); }
-.wallet-btn-top.connected { border-color: var(--lime-border); background: var(--lime-dim); color: var(--lime); }
+.tb{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--b1);position:sticky;top:0;background:rgba(12,12,12,0.95);backdrop-filter:blur(12px);z-index:99}
+.logo{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--sub);text-transform:uppercase}
+.logo-box{width:24px;height:24px;border-radius:6px;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:13px;color:#000;font-weight:800}
+.tb-r{display:flex;align-items:center;gap:8px}
+.npill{display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid var(--b2);border-radius:100px;font-size:11px;color:var(--sub)}
+.ndot{width:6px;height:6px;border-radius:50%;background:var(--lime);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.wcbtn{padding:7px 13px;border-radius:8px;border:1px solid var(--b2);background:var(--s1);color:var(--sub);font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.wcbtn:hover{border-color:var(--limb);color:var(--lime)}
+.wcbtn.on{border-color:var(--limb);background:var(--limd);color:var(--lime)}
 
 /* HERO */
-.hero { padding: 48px 20px 36px; max-width: 700px; margin: 0 auto; }
-.hero-eyebrow { font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-.hero-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--muted); }
-.hero-title { font-size: clamp(32px,8vw,52px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px; }
-.hero-title .accent { color: var(--lime); }
-.hero-desc { font-size: 14px; color: var(--sub); line-height: 1.6; max-width: 380px; }
-
-/* CONTRACT BADGE */
-.contract-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  margin-top: 16px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--lime-border);
-  background: var(--lime-dim);
-  font-size: 11px;
-  color: var(--lime);
-}
-.contract-badge span { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.hero{padding:44px 18px 32px;max-width:680px;margin:0 auto}
+.eyebrow{font-size:11px;color:var(--mut);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:'';width:18px;height:1px;background:var(--mut)}
+.htitle{font-size:clamp(30px,7vw,50px);font-weight:700;line-height:1.08;letter-spacing:-.03em;margin-bottom:12px}
+.htitle .ac{color:var(--lime)}
+.hdesc{font-size:14px;color:var(--sub);line-height:1.65;max-width:360px;margin-bottom:16px}
+.cbadge{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;border:1px solid var(--limb);background:var(--limd);font-size:11px;color:var(--lime)}
+.cbadge span{font-family:'JetBrains Mono',monospace;font-size:10px}
 
 /* GRID */
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; border: 1px solid var(--border); margin: 0 20px 20px; border-radius: 16px; overflow: hidden; max-width: 700px; margin-left: auto; margin-right: auto; }
-.panel { background: var(--surface); padding: 24px; }
-.panel.dark { background: #0e0e0e; }
-.panel.full { grid-column: span 2; }
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;border:1px solid var(--b1);border-radius:14px;overflow:hidden;max-width:680px;margin:0 auto 18px}
+.p{background:var(--s1);padding:22px}
+.p.dk{background:#0d0d0d}
+.p.fw{grid-column:span 2}
+.pey{font-size:10px;font-weight:600;letter-spacing:.09em;color:var(--mut);text-transform:uppercase;margin-bottom:16px;display:flex;justify-content:space-between}
+.pey .n{font-family:'JetBrains Mono',monospace}
 
-.panel-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
-.panel-eyebrow .num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); }
+/* WALLET PANEL */
+.wrow{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.wico{width:42px;height:42px;border-radius:11px;background:var(--s2);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;transition:all .3s}
+.wico.on{background:var(--limd);border-color:var(--limb)}
+.wlbl{font-size:11px;color:var(--mut);margin-bottom:2px}
+.wval{font-size:13px;font-weight:600;color:var(--sub);font-family:'JetBrains Mono',monospace}
+.wval.on{color:var(--lime)}
 
-/* WALLET */
-.wallet-status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-.wallet-icon-big { width: 44px; height: 44px; border-radius: 12px; background: var(--surface2); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; transition: all 0.3s; }
-.wallet-icon-big.connected { background: var(--lime-dim); border-color: var(--lime-border); }
-.wallet-status-label { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
-.wallet-status-val { font-size: 14px; font-weight: 600; color: var(--sub); font-family: 'JetBrains Mono', monospace; }
-.wallet-status-val.connected { color: var(--lime); }
+.balblk{margin-bottom:18px}
+.ballbl{font-size:11px;color:var(--mut);margin-bottom:3px}
+.balrow{display:flex;align-items:baseline;gap:5px}
+.balnum{font-size:36px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.balunit{font-size:15px;font-weight:600;color:var(--lime)}
+.balusd{font-size:12px;color:var(--mut);margin-top:2px}
 
-.balance-block { margin-bottom: 20px; }
-.bal-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
-.bal-row { display: flex; align-items: baseline; gap: 6px; }
-.bal-num { font-size: 38px; font-weight: 700; letter-spacing: -0.03em; color: var(--text); line-height: 1; }
-.bal-unit { font-size: 16px; font-weight: 600; color: var(--lime); }
-.bal-usd { font-size: 12px; color: var(--muted); margin-top: 3px; }
-
-.btn-connect { width: 100%; padding: 13px; border-radius: 10px; border: 1px solid var(--lime-border); background: var(--lime-dim); color: var(--lime); font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; margin-bottom: 8px; }
-.btn-connect:hover { background: rgba(184,240,0,0.2); box-shadow: 0 0 20px rgba(184,240,0,0.1); }
-.btn-ghost { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border2); background: transparent; color: var(--muted); font-family: 'Space Grotesk', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s; display: none; }
-.btn-ghost:hover { border-color: var(--red); color: var(--red); }
+.btn-c{width:100%;padding:12px;border-radius:10px;border:1px solid var(--limb);background:var(--limd);color:var(--lime);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;margin-bottom:7px}
+.btn-c:hover{background:rgba(184,240,0,0.18);box-shadow:0 0 18px rgba(184,240,0,.1)}
+.btn-g{width:100%;padding:10px;border-radius:10px;border:1px solid var(--b2);background:transparent;color:var(--mut);font-family:'Space Grotesk',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;display:none}
+.btn-g:hover{border-color:var(--red);color:var(--red)}
 
 /* STATUS */
-.status-items { display: flex; flex-direction: column; gap: 12px; }
-.srow { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-.srow:last-child { border-bottom: none; padding-bottom: 0; }
-.srow-lbl { font-size: 12px; color: var(--muted); }
-.srow-val { font-size: 13px; font-weight: 600; color: var(--sub); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.srows{display:flex;flex-direction:column;gap:0}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--b1)}
+.srow:last-child{border-bottom:none}
+.slbl{font-size:12px;color:var(--mut)}
+.sval{font-size:12px;font-weight:600;color:var(--sub);font-family:'JetBrains Mono',monospace}
+.tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;font-size:12px;font-weight:600}
+.tg{background:var(--limd);color:var(--lime);border:1px solid var(--limb)}
+.tw{background:rgba(255,255,255,.05);color:var(--sub);border:1px solid var(--b2)}
 
-.tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 100px; font-size: 12px; font-weight: 600; }
-.tag-lime  { background: var(--lime-dim); color: var(--lime); border: 1px solid var(--lime-border); }
-.tag-white { background: rgba(255,255,255,0.06); color: var(--sub); border: 1px solid var(--border2); }
+.vnodes{display:flex;gap:4px;margin-top:12px}
+.vn{flex:1;height:3px;border-radius:100px;background:var(--b2);transition:background .5s}
+.vn.on{background:var(--lime)}
 
-.vnodes { display: flex; gap: 4px; margin-top: 14px; }
-.vnode { flex: 1; height: 3px; border-radius: 100px; background: var(--border2); transition: background 0.5s ease; }
-.vnode.on { background: var(--lime); }
+/* TX PANEL */
+.txrow{display:flex;align-items:center;justify-content:space-between;background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:13px;margin-bottom:13px}
+.txfl{font-size:11px;color:var(--mut);margin-bottom:2px}
+.txfa{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sub)}
+.txarr{font-size:16px;color:var(--mut)}
+.txan{font-size:20px;font-weight:700;color:var(--lime);text-align:right}
+.txal{font-size:11px;color:var(--mut);text-align:right}
 
-/* TX */
-.tx-detail-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
-.tx-from-lbl { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
-.tx-from-addr { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--sub); }
-.tx-arrow { font-size: 18px; color: var(--muted); }
-.tx-amount-num { font-size: 22px; font-weight: 700; color: var(--lime); }
-.tx-amount-lbl { font-size: 11px; color: var(--muted); text-align: right; }
+.steps{display:flex;flex-direction:column;position:relative;margin-bottom:13px}
+.steps::before{content:'';position:absolute;left:13px;top:22px;bottom:22px;width:1px;background:var(--b2)}
+.step{display:flex;align-items:flex-start;gap:11px;padding:8px 0;opacity:.25;transition:opacity .35s;position:relative;z-index:1}
+.step.active,.step.done{opacity:1}
+.sdot{width:26px;height:26px;border-radius:50%;border:1px solid var(--b2);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--mut);flex-shrink:0;transition:all .35s;font-family:'JetBrains Mono',monospace}
+.step.active .sdot{border-color:var(--lime);color:var(--lime);background:var(--limd);animation:sp 1.5s ease-in-out infinite}
+.step.done .sdot{border-color:var(--lime);background:var(--lime);color:#000;font-weight:700}
+@keyframes sp{0%,100%{box-shadow:0 0 0 0 rgba(184,240,0,.3)}50%{box-shadow:0 0 0 5px rgba(184,240,0,0)}}
+.si{padding-top:3px}
+.st{font-size:13px;font-weight:600;margin-bottom:1px}
+.sd{font-size:11px;color:var(--mut)}
 
-.steps { display: flex; flex-direction: column; gap: 0; margin-bottom: 14px; position: relative; }
-.steps::before { content: ''; position: absolute; left: 14px; top: 24px; bottom: 24px; width: 1px; background: var(--border2); }
-.step { display: flex; align-items: flex-start; gap: 12px; padding: 9px 0; opacity: 0.28; transition: opacity 0.35s; position: relative; z-index: 1; }
-.step.active, .step.done { opacity: 1; }
-.step-dot { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border2); background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--muted); flex-shrink: 0; transition: all 0.35s; font-family: 'JetBrains Mono', monospace; }
-.step.active .step-dot { border-color: var(--lime); color: var(--lime); background: var(--lime-dim); animation: step-pulse 1.5s ease-in-out infinite; }
-.step.done .step-dot { border-color: var(--lime); background: var(--lime); color: #000; font-weight: 700; }
-@keyframes step-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(184,240,0,0.3)} 50%{box-shadow:0 0 0 6px rgba(184,240,0,0)} }
-.step-info { padding-top: 4px; }
-.step-title { font-size: 13px; font-weight: 600; margin-bottom: 1px; }
-.step-desc  { font-size: 11px; color: var(--muted); }
+.hbox{background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:11px 13px;margin-bottom:11px;display:none}
+.hbox.show{display:block}
+.hlbl{font-size:10px;color:var(--mut);margin-bottom:4px;letter-spacing:.05em}
+.hval{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--lime);word-break:break-all;line-height:1.6}
+.hmeta{display:flex;gap:12px;margin-top:7px;flex-wrap:wrap}
+.hm{font-size:11px;color:var(--mut)}
+.hm span{color:var(--sub);font-weight:500}
 
-.hash-box { background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; display: none; }
-.hash-box.show { display: block; }
-.hash-box-lbl { font-size: 10px; color: var(--muted); margin-bottom: 5px; letter-spacing: 0.05em; }
-.hash-box-val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--lime); word-break: break-all; line-height: 1.6; }
-.hash-meta { display: flex; gap: 14px; margin-top: 8px; flex-wrap: wrap; }
-.hm { font-size: 11px; color: var(--muted); }
-.hm span { color: var(--sub); font-weight: 500; }
+.btn-s{width:100%;padding:13px;border-radius:10px;border:1px solid var(--limb);background:var(--lime);color:#000;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s}
+.btn-s:hover{background:#c8f020;box-shadow:0 0 20px rgba(184,240,0,.18)}
+.btn-s:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
 
-.btn-send { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--lime-border); background: var(--lime); color: #000; font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
-.btn-send:hover { background: #c8f520; box-shadow: 0 0 24px rgba(184,240,0,0.2); }
-.btn-send:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
-
-.success-strip { border: 1px solid rgba(34,197,94,0.25); background: rgba(34,197,94,0.06); border-radius: 10px; padding: 14px; text-align: center; display: none; margin-top: 12px; }
-.success-strip.show { display: block; }
-.success-strip .s-title { font-size: 15px; font-weight: 700; color: var(--green); margin-bottom: 3px; }
-.success-strip .s-sub   { font-size: 12px; color: var(--muted); }
+.sucstrip{border:1px solid rgba(34,197,94,.22);background:rgba(34,197,94,.05);border-radius:9px;padding:13px;text-align:center;display:none;margin-top:11px}
+.sucstrip.show{display:block}
+.suctit{font-size:14px;font-weight:700;color:var(--grn);margin-bottom:2px}
+.sucsub{font-size:11px;color:var(--mut)}
 
 /* NEXT */
-.next-title { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 10px; }
-.next-title .accent { color: var(--lime); }
-.next-desc { font-size: 13px; color: var(--sub); line-height: 1.6; margin-bottom: 14px; }
-.contract-addr-box { background: var(--surface2); border: 1px solid var(--lime-border); border-radius: 8px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--lime); margin-bottom: 14px; word-break: break-all; }
-.btn-studio { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border2); background: var(--surface2); color: var(--sub); font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.2s; }
-.btn-studio:hover { border-color: var(--lime-border); color: var(--lime); }
+.ntit{font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.15;margin-bottom:9px}
+.ntit .ac{color:var(--lime)}
+.ndesc{font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:13px}
+.cabox{background:var(--s2);border:1px solid var(--limb);border-radius:8px;padding:9px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--lime);margin-bottom:13px;word-break:break-all;cursor:pointer}
+.btnst{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-radius:9px;border:1px solid var(--b2);background:var(--s2);color:var(--sub);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s}
+.btnst:hover{border-color:var(--limb);color:var(--lime)}
 
 /* HISTORY */
-.tx-rows { display: flex; flex-direction: column; gap: 6px; }
-.tx-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
-.tx-row-hash { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--sub); }
-.tx-row-block { font-size: 11px; color: var(--muted); margin-top: 1px; }
-.tx-row-amt { font-size: 14px; font-weight: 700; color: var(--lime); }
-.tx-row-time { font-size: 11px; color: var(--muted); text-align: right; }
-.empty-state { text-align: center; padding: 24px; color: var(--muted); font-size: 13px; }
+.hrows{display:flex;flex-direction:column;gap:5px}
+.hrow{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--s2);border:1px solid var(--b1);border-radius:8px}
+.hrhash{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sub)}
+.hrblk{font-size:10px;color:var(--mut);margin-top:1px}
+.hramt{font-size:13px;font-weight:700;color:var(--lime)}
+.hrtim{font-size:10px;color:var(--mut);text-align:right}
+.empty{text-align:center;padding:22px;color:var(--mut);font-size:13px}
 
-/* BOTTOMBAR */
-.bottombar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--muted); max-width: 700px; margin: 20px auto 0; }
+/* BOTTOM */
+.bot{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-top:1px solid var(--b1);font-size:11px;color:var(--mut);max-width:680px;margin:16px auto 0}
 
 /* TOAST */
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); background: rgba(20,20,20,0.95); border: 1px solid var(--border2); backdrop-filter: blur(20px); color: var(--text); font-size: 13px; font-weight: 500; padding: 10px 20px; border-radius: 100px; z-index: 999; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); white-space: nowrap; }
-.toast.show { transform: translateX(-50%) translateY(0); }
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:rgba(18,18,18,.96);border:1px solid var(--b2);backdrop-filter:blur(16px);color:var(--txt);font-size:12px;font-weight:500;padding:9px 18px;border-radius:100px;z-index:999;transition:transform .3s cubic-bezier(.16,1,.3,1);white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-@media (max-width: 540px) {
-  .grid { grid-template-columns: 1fr; margin: 0 12px 12px; }
-  .panel.full { grid-column: span 1; }
-  .hero { padding: 28px 16px 24px; }
+@media(max-width:520px){
+  .grid{grid-template-columns:1fr}
+  .p.fw{grid-column:span 1}
+  .hero{padding:28px 14px 22px}
 }
 </style>
 </head>
 <body>
 
-<!-- Topbar -->
-<div class="topbar">
-  <div class="brand">
-    <div class="brand-dot">⬡</div>
+<div class="tb">
+  <div class="logo">
+    <div class="logo-box">⬡</div>
     GenlayerVerifyLayer
   </div>
-  <div class="topbar-right">
-    <div class="node-pill"><div class="live-dot"></div>nodes responding</div>
-    <button class="wallet-btn-top" id="topWalletBtn" onclick="connectWallet()">⬡ Connect Wallet</button>
+  <div class="tb-r">
+    <div class="npill"><div class="ndot"></div>nodes responding</div>
+    <button class="wcbtn" id="tbw" onclick="connectWallet()">⬡ Connect Wallet</button>
   </div>
 </div>
 
-<!-- Hero -->
 <div class="hero">
-  <div class="hero-eyebrow">Client-side network check</div>
-  <div class="hero-title">Know the address<br>before you trust<br><span class="accent">the route.</span></div>
-  <div class="hero-desc">A focused desk for checking whether a GenLayer intelligent contract address is reachable — and which network is answering back.</div>
-  <div class="contract-badge">
-    ✓ Deployed Contract &nbsp;
-    <span id="deployedAddr">0x0D1A1f2889897cFCb440A194fedaeC131101E0E8</span>
-  </div>
+  <div class="eyebrow">Client-side network check</div>
+  <div class="htitle">Know the address<br>before you trust<br><span class="ac">the route.</span></div>
+  <div class="hdesc">A focused desk for checking whether a GenLayer intelligent contract address is reachable — and which network is answering back.</div>
+  <div class="cbadge">✓ Deployed &nbsp;<span>0x0D1A1f2889897cFCb440A194fedaeC131101E0E8</span></div>
 </div>
 
-<!-- Grid -->
-<div class="grid">
+<div class="grid" style="padding:0 18px;max-width:716px">
 
-  <!-- Wallet -->
-  <div class="panel">
-    <div class="panel-eyebrow"><span>Wallet</span><span class="num">01</span></div>
-    <div class="wallet-status-row">
-      <div class="wallet-icon-big" id="walletIcon">👛</div>
+  <!-- 01 Wallet -->
+  <div class="p">
+    <div class="pey"><span>Wallet</span><span class="n">01</span></div>
+    <div class="wrow">
+      <div class="wico" id="wico">👛</div>
       <div>
-        <div class="wallet-status-label">Status</div>
-        <div class="wallet-status-val" id="walletStatusVal">Not connected</div>
+        <div class="wlbl">Status</div>
+        <div class="wval" id="wval">Not connected</div>
       </div>
     </div>
-    <div class="balance-block" id="balanceBlock" style="display:none">
-      <div class="bal-label">Balance</div>
-      <div class="bal-row">
-        <span class="bal-num" id="balNum">125.4</span>
-        <span class="bal-unit">GEN</span>
-      </div>
-      <div class="bal-usd" id="balUsd">≈ $102.83 USD</div>
+    <div class="balblk" id="balblk" style="display:none">
+      <div class="ballbl">Balance</div>
+      <div class="balrow"><span class="balnum" id="balnum">125.4</span><span class="balunit">GEN</span></div>
+      <div class="balusd" id="balusd">≈ $102.83 USD</div>
     </div>
-    <button class="btn-connect" id="connectBtn" onclick="connectWallet()">⬡ Connect Dummy Wallet</button>
-    <button class="btn-ghost" id="disconnectBtn" onclick="disconnectWallet()">Disconnect wallet</button>
+    <button class="btn-c" id="cbtn" onclick="connectWallet()">⬡ Connect Dummy Wallet</button>
+    <button class="btn-g" id="dbtn" onclick="disconnectWallet()">Disconnect</button>
   </div>
 
-  <!-- Status -->
-  <div class="panel dark">
-    <div class="panel-eyebrow"><span>GenLayer Status</span><span class="num">02</span></div>
-    <div class="status-items">
-      <div class="srow"><span class="srow-lbl">Network</span><span class="tag tag-lime">Asimov Mainnet</span></div>
-      <div class="srow"><span class="srow-lbl">Eligibility</span><span class="tag tag-lime" id="eligTag">— Connect wallet</span></div>
-      <div class="srow"><span class="srow-lbl">Eligible tokens</span><span class="srow-val" id="eligTokens">—</span></div>
-      <div class="srow"><span class="srow-lbl">Contract</span><span class="srow-val">0x0D1A...E0E8</span></div>
-      <div class="srow"><span class="srow-lbl">Validator set</span><span class="tag tag-white">Bradbury Testnet</span></div>
+  <!-- 02 Status -->
+  <div class="p dk">
+    <div class="pey"><span>GenLayer Status</span><span class="n">02</span></div>
+    <div class="srows">
+      <div class="srow"><span class="slbl">Network</span><span class="tag tg">Asimov Mainnet</span></div>
+      <div class="srow"><span class="slbl">Eligibility</span><span class="tag tg" id="elig">— Connect wallet</span></div>
+      <div class="srow"><span class="slbl">Eligible tokens</span><span class="sval" id="etok">—</span></div>
+      <div class="srow"><span class="slbl">Contract</span><span class="sval">0x0D1A...E0E8</span></div>
+      <div class="srow"><span class="slbl">Validators</span><span class="tag tw">Bradbury · 5/5</span></div>
     </div>
-    <div class="vnodes" id="vnodes">
-      <div class="vnode"></div><div class="vnode"></div><div class="vnode"></div>
-      <div class="vnode"></div><div class="vnode"></div>
+    <div class="vnodes">
+      <div class="vn" id="v1"></div><div class="vn" id="v2"></div><div class="vn" id="v3"></div>
+      <div class="vn" id="v4"></div><div class="vn" id="v5"></div>
     </div>
   </div>
 
-  <!-- Transaction -->
-  <div class="panel">
-    <div class="panel-eyebrow"><span>Send 1 GEN Transaction</span><span class="num">03</span></div>
-    <div class="tx-detail-row">
+  <!-- 03 Transaction -->
+  <div class="p">
+    <div class="pey"><span>Send 1 GEN</span><span class="n">03</span></div>
+    <div class="txrow">
       <div>
-        <div class="tx-from-lbl">From</div>
-        <div class="tx-from-addr" id="txFromAddr">— connect wallet</div>
+        <div class="txfl">From</div>
+        <div class="txfa" id="txfa">— connect wallet</div>
       </div>
-      <div class="tx-arrow">→</div>
-      <div style="text-align:right">
-        <div class="tx-amount-num">1 GEN</div>
-        <div class="tx-amount-lbl">≈ $0.82 USD</div>
+      <div class="txarr">→</div>
+      <div>
+        <div class="txan">1 GEN</div>
+        <div class="txal">≈ $0.82 USD</div>
       </div>
     </div>
     <div class="steps">
-      <div class="step" id="s1"><div class="step-dot">1</div><div class="step-info"><div class="step-title">Prepare</div><div class="step-desc">Build transfer payload</div></div></div>
-      <div class="step" id="s2"><div class="step-dot">2</div><div class="step-info"><div class="step-title">Simulate</div><div class="step-desc">Validators independently execute</div></div></div>
-      <div class="step" id="s3"><div class="step-dot">3</div><div class="step-info"><div class="step-title">Consensus</div><div class="step-desc">5/5 validators agree</div></div></div>
-      <div class="step" id="s4"><div class="step-dot">4</div><div class="step-info"><div class="step-title">Confirmed</div><div class="step-desc">1 GEN written on-chain</div></div></div>
+      <div class="step" id="s1"><div class="sdot">1</div><div class="si"><div class="st">Prepare</div><div class="sd">Build transfer payload</div></div></div>
+      <div class="step" id="s2"><div class="sdot">2</div><div class="si"><div class="st">Simulate</div><div class="sd">Validators execute independently</div></div></div>
+      <div class="step" id="s3"><div class="sdot">3</div><div class="si"><div class="st">Consensus</div><div class="sd">5/5 validators agree</div></div></div>
+      <div class="step" id="s4"><div class="sdot">4</div><div class="si"><div class="st">Confirmed</div><div class="sd">1 GEN written on-chain</div></div></div>
     </div>
-    <div class="hash-box" id="hashBox">
-      <div class="hash-box-lbl">Transaction Hash</div>
-      <div class="hash-box-val" id="hashVal"></div>
-      <div class="hash-meta">
-        <div class="hm">Block <span id="blockNum">#—</span></div>
+    <div class="hbox" id="hbox">
+      <div class="hlbl">Transaction Hash</div>
+      <div class="hval" id="hval"></div>
+      <div class="hmeta">
+        <div class="hm">Block <span id="blkn">#—</span></div>
         <div class="hm">Gas <span>21,000</span></div>
         <div class="hm">Fee <span>0.0002 GEN</span></div>
-        <div class="hm">Status <span style="color:#22c55e" id="txStatus">—</span></div>
+        <div class="hm">Status <span style="color:#22c55e" id="txst">—</span></div>
       </div>
     </div>
-    <button class="btn-send" id="sendBtn" onclick="sendTx()" disabled>Connect wallet to send</button>
-    <div class="success-strip" id="successStrip">
-      <div class="s-title">✓ Transaction Confirmed</div>
-      <div class="s-sub" id="successSub">1 GEN sent on Asimov Mainnet</div>
+    <button class="btn-s" id="sbtn" onclick="sendTx()" disabled>Connect wallet to send</button>
+    <div class="sucstrip" id="suc">
+      <div class="suctit">✓ Transaction Confirmed</div>
+      <div class="sucsub" id="sucsub">1 GEN sent on Asimov Mainnet</div>
     </div>
   </div>
 
-  <!-- Next Step -->
-  <div class="panel dark">
-    <div class="panel-eyebrow"><span>Next Step</span><span class="num">04</span></div>
-    <div class="next-title">Test it in<br><span class="accent">Studio.</span></div>
-    <div class="next-desc">Contract deployed and ready. Open GenLayer Studio to interact with your Intelligent Contract directly.</div>
-    <div class="contract-addr-box">0x0D1A1f2889897cFCb440A194fedaeC131101E0E8</div>
-    <a class="btn-studio" href="https://studio.genlayer.com" target="_blank">Open GenLayer Studio <span>↗</span></a>
+  <!-- 04 Next Step -->
+  <div class="p dk">
+    <div class="pey"><span>Next Step</span><span class="n">04</span></div>
+    <div class="ntit">Test it in<br><span class="ac">Studio.</span></div>
+    <div class="ndesc">Contract deployed and live. Open GenLayer Studio to interact with your Intelligent Contract directly.</div>
+    <div class="cabox" onclick="copyContract()" title="Click to copy">
+      0x0D1A1f2889897cFCb440A194fedaeC131101E0E8
+    </div>
+    <a class="btnst" href="https://studio.genlayer.com" target="_blank">Open GenLayer Studio <span>↗</span></a>
   </div>
 
-  <!-- History -->
-  <div class="panel full">
-    <div class="panel-eyebrow"><span>Transaction History</span><span class="num">05</span></div>
-    <div class="tx-rows" id="txRows">
-      <div class="empty-state">No transactions yet. Connect wallet and send 1 GEN to start.</div>
+  <!-- 05 History -->
+  <div class="p fw">
+    <div class="pey"><span>Transaction History</span><span class="n">05</span></div>
+    <div class="hrows" id="hrows">
+      <div class="empty">No transactions yet — connect wallet and send 1 GEN to start.</div>
     </div>
   </div>
 
 </div>
 
-<!-- Bottom -->
-<div class="bottombar">
+<div class="bot">
   <span>GenlayerVerifyLayer · Asimov Mainnet · 0x0D1A...E0E8</span>
-  <span style="display:flex;align-items:center;gap:6px">
-    <span style="width:6px;height:6px;border-radius:50%;background:#b8f000;display:inline-block"></span>
+  <span style="display:flex;align-items:center;gap:5px">
+    <span style="width:6px;height:6px;border-radius:50%;background:var(--lime);display:inline-block"></span>
     Browser storage active
   </span>
 </div>
@@ -317,132 +274,96 @@ html, body { min-height: 100%; background: var(--bg); color: var(--text); font-f
 <div class="toast" id="toast"></div>
 
 <script>
-const CONTRACT_ADDRESS = "0x0D1A1f2889897cFCb440A194fedaeC131101E0E8";
-let connected = false, walletAddr = '', balance = 125.4, txRunning = false, txLog = [];
+const CA="0x0D1A1f2889897cFCb440A194fedaeC131101E0E8";
+let conn=false,waddr='',bal=125.4,txrun=false,log=[];
 
-function randAddr() { return '0x'+Array.from({length:40},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join(''); }
-function randHash() { return '0x'+Array.from({length:64},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join(''); }
-function short(a) { return a.slice(0,6)+'...'+a.slice(-4); }
-function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+const rA=()=>'0x'+Array.from({length:40},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
+const rH=()=>'0x'+Array.from({length:64},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
+const sh=a=>a.slice(0,6)+'...'+a.slice(-4);
+const slp=ms=>new Promise(r=>setTimeout(r,ms));
 
-function connectWallet() {
-  if(connected) return;
-  walletAddr = randAddr(); connected = true;
-  const tb = document.getElementById('topWalletBtn');
-  tb.textContent = '✓ '+short(walletAddr); tb.classList.add('connected'); tb.onclick = null;
-  document.getElementById('walletIcon').textContent = '🔐';
-  document.getElementById('walletIcon').classList.add('connected');
-  document.getElementById('walletStatusVal').textContent = short(walletAddr);
-  document.getElementById('walletStatusVal').classList.add('connected');
-  document.getElementById('balanceBlock').style.display = 'block';
-  updateBal();
-  document.getElementById('connectBtn').style.display = 'none';
-  document.getElementById('disconnectBtn').style.display = 'block';
-  document.getElementById('eligTag').textContent = '✓ Eligible';
-  document.getElementById('eligTokens').textContent = '105.3 GEN';
-  animateV();
-  document.getElementById('txFromAddr').textContent = short(walletAddr);
-  document.getElementById('sendBtn').disabled = false;
-  document.getElementById('sendBtn').textContent = 'Send 1 GEN';
-  showToast('Wallet connected · '+short(walletAddr));
+function connectWallet(){
+  if(conn)return;
+  waddr=rA();conn=true;
+  const tb=document.getElementById('tbw');
+  tb.textContent='✓ '+sh(waddr);tb.classList.add('on');tb.onclick=null;
+  document.getElementById('wico').textContent='🔐';
+  document.getElementById('wico').classList.add('on');
+  document.getElementById('wval').textContent=sh(waddr);
+  document.getElementById('wval').classList.add('on');
+  document.getElementById('balblk').style.display='block';
+  updBal();
+  document.getElementById('cbtn').style.display='none';
+  document.getElementById('dbtn').style.display='block';
+  document.getElementById('elig').textContent='✓ Eligible';
+  document.getElementById('etok').textContent='105.3 GEN';
+  [1,2,3,4,5].forEach(i=>setTimeout(()=>document.getElementById('v'+i).classList.add('on'),i*160));
+  document.getElementById('txfa').textContent=sh(waddr);
+  document.getElementById('sbtn').disabled=false;
+  document.getElementById('sbtn').textContent='Send 1 GEN';
+  toast('Wallet connected · '+sh(waddr));
 }
 
-function disconnectWallet() {
-  connected = false; balance = 125.4; txLog = [];
-  const tb = document.getElementById('topWalletBtn');
-  tb.textContent = '⬡ Connect Wallet'; tb.classList.remove('connected'); tb.onclick = connectWallet;
-  document.getElementById('walletIcon').textContent = '👛';
-  document.getElementById('walletIcon').classList.remove('connected');
-  document.getElementById('walletStatusVal').textContent = 'Not connected';
-  document.getElementById('walletStatusVal').classList.remove('connected');
-  document.getElementById('balanceBlock').style.display = 'none';
-  document.getElementById('connectBtn').style.display = 'block';
-  document.getElementById('disconnectBtn').style.display = 'none';
-  document.getElementById('eligTag').textContent = '— Connect wallet';
-  document.getElementById('eligTokens').textContent = '—';
-  document.querySelectorAll('.vnode').forEach(v=>v.classList.remove('on'));
-  document.getElementById('txFromAddr').textContent = '— connect wallet';
-  document.getElementById('sendBtn').disabled = true;
-  document.getElementById('sendBtn').textContent = 'Connect wallet to send';
-  document.getElementById('hashBox').classList.remove('show');
-  document.getElementById('successStrip').classList.remove('show');
-  resetSteps(); renderHistory();
-  showToast('Wallet disconnected');
+function disconnectWallet(){
+  conn=false;bal=125.4;log=[];
+  const tb=document.getElementById('tbw');
+  tb.textContent='⬡ Connect Wallet';tb.classList.remove('on');tb.onclick=connectWallet;
+  document.getElementById('wico').textContent='👛';
+  document.getElementById('wico').classList.remove('on');
+  document.getElementById('wval').textContent='Not connected';
+  document.getElementById('wval').classList.remove('on');
+  document.getElementById('balblk').style.display='none';
+  document.getElementById('cbtn').style.display='block';
+  document.getElementById('dbtn').style.display='none';
+  document.getElementById('elig').textContent='— Connect wallet';
+  document.getElementById('etok').textContent='—';
+  [1,2,3,4,5].forEach(i=>document.getElementById('v'+i).classList.remove('on'));
+  document.getElementById('txfa').textContent='— connect wallet';
+  document.getElementById('sbtn').disabled=true;
+  document.getElementById('sbtn').textContent='Connect wallet to send';
+  document.getElementById('hbox').classList.remove('show');
+  document.getElementById('suc').classList.remove('show');
+  resetSteps();renderHist();
+  toast('Wallet disconnected');
 }
 
-function updateBal() {
-  document.getElementById('balNum').textContent = balance.toFixed(1);
-  document.getElementById('balUsd').textContent = '≈ $'+(balance*0.82).toFixed(2)+' USD';
+function updBal(){
+  document.getElementById('balnum').textContent=bal.toFixed(1);
+  document.getElementById('balusd').textContent='≈ $'+(bal*0.82).toFixed(2)+' USD';
 }
 
-function animateV() {
-  document.querySelectorAll('.vnode').forEach((n,i)=>setTimeout(()=>n.classList.add('on'),i*180));
-}
-
-function resetSteps() {
+function resetSteps(){
   ['s1','s2','s3','s4'].forEach((id,i)=>{
     const el=document.getElementById(id);
     el.classList.remove('active','done');
-    el.querySelector('.step-dot').textContent=i+1;
+    el.querySelector('.sdot').textContent=i+1;
   });
-  if(connected){document.getElementById('sendBtn').disabled=false;document.getElementById('sendBtn').textContent='Send 1 GEN';}
-  txRunning=false;
+  if(conn){document.getElementById('sbtn').disabled=false;document.getElementById('sbtn').textContent='Send 1 GEN';}
+  txrun=false;
 }
 
-function setStep(id,state) {
+function setStep(id,st){
   const el=document.getElementById(id);
   el.classList.remove('active','done');
-  if(state==='active') el.classList.add('active');
-  if(state==='done'){el.classList.add('done');el.querySelector('.step-dot').textContent='✓';}
+  if(st==='active')el.classList.add('active');
+  if(st==='done'){el.classList.add('done');el.querySelector('.sdot').textContent='✓';}
 }
 
-async function sendTx() {
-  if(txRunning||!connected) return;
-  txRunning=true;
-  document.getElementById('sendBtn').disabled=true;
-  document.getElementById('sendBtn').textContent='Processing…';
-  document.getElementById('successStrip').classList.remove('show');
-  document.getElementById('hashBox').classList.remove('show');
-  resetSteps(); txRunning=true;
-  const hash=randHash(), block=Math.floor(Math.random()*900000+100000);
-  setStep('s1','active'); await sleep(700);
-  setStep('s1','done'); setStep('s2','active'); await sleep(1000);
-  setStep('s2','done'); setStep('s3','active'); await sleep(1100);
-  setStep('s3','done'); setStep('s4','active'); await sleep(900);
+async function sendTx(){
+  if(txrun||!conn)return;
+  txrun=true;
+  document.getElementById('sbtn').disabled=true;
+  document.getElementById('sbtn').textContent='Processing…';
+  document.getElementById('suc').classList.remove('show');
+  document.getElementById('hbox').classList.remove('show');
+  resetSteps();txrun=true;
+  const h=rH(),blk=Math.floor(Math.random()*900000+100000);
+  setStep('s1','active');await slp(700);
+  setStep('s1','done');setStep('s2','active');await slp(1000);
+  setStep('s2','done');setStep('s3','active');await slp(1100);
+  setStep('s3','done');setStep('s4','active');await slp(900);
   setStep('s4','done');
-  document.getElementById('hashVal').textContent=hash;
-  document.getElementById('blockNum').textContent='#'+block;
-  document.getElementById('txStatus').textContent='Confirmed';
-  document.getElementById('hashBox').classList.add('show');
-  balance=parseFloat((balance-1).toFixed(1)); updateBal();
-  document.getElementById('sendBtn').textContent='✓ Sent · Send again';
-  document.getElementById('sendBtn').disabled=false;
-  document.getElementById('successStrip').classList.add('show');
-  document.getElementById('successSub').textContent='1 GEN · Block #'+block+' · '+CONTRACT_ADDRESS.slice(0,10)+'...';
-  const now=new Date();
-  txLog.unshift({hash,block,time:now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')});
-  renderHistory();
-  showToast('✓ 1 GEN confirmed on-chain');
-  txRunning=false;
-}
-
-function renderHistory() {
-  const c=document.getElementById('txRows');
-  if(!txLog.length){c.innerHTML='<div class="empty-state">No transactions yet. Connect wallet and send 1 GEN to start.</div>';return;}
-  c.innerHTML=txLog.map(tx=>`
-    <div class="tx-row">
-      <div><div class="tx-row-hash">${tx.hash.slice(0,16)}…${tx.hash.slice(-8)}</div><div class="tx-row-block">Block #${tx.block}</div></div>
-      <div style="text-align:right"><div class="tx-row-amt">−1 GEN</div><div class="tx-row-time">${tx.time}</div></div>
-    </div>`).join('');
-}
-
-let toastTimer;
-function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
-}
-</script>
-</body>
-</html>
+  document.getElementById('hval').textContent=h;
+  document.getElementById('blkn').textContent='#'+blk;
+  document.getElementById('txst').textContent='Confirmed';
+  document.getElementById('hbox'
