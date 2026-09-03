@@ -11,12 +11,13 @@
   --bg:#0c0c0c;--s1:#141414;--s2:#1a1a1a;
   --b1:#1e1e1e;--b2:#2a2a2a;
   --lime:#b8f000;--limd:rgba(184,240,0,0.1);--limb:rgba(184,240,0,0.28);
+  --orange:#f7931a;--ord:rgba(247,147,26,0.1);--orb:rgba(247,147,26,0.3);
   --txt:#f0f0f0;--sub:#888;--mut:#444;
   --grn:#22c55e;--red:#f43f5e
 }
 html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Space Grotesk',sans-serif}
 
-.tb{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--b1);position:sticky;top:0;background:rgba(12,12,12,0.95);backdrop-filter:blur(12px);z-index:99}
+.tb{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--b1);position:sticky;top:0;background:rgba(12,12,12,0.95);backdrop-filter:blur(12px);z-index:99;gap:10px;flex-wrap:wrap}
 .logo{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--sub);text-transform:uppercase}
 .logo-box{width:24px;height:24px;border-radius:6px;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:13px;color:#000;font-weight:800}
 .tb-r{display:flex;align-items:center;gap:8px}
@@ -46,9 +47,11 @@ html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Spa
 .wrow{display:flex;align-items:center;gap:10px;margin-bottom:18px}
 .wico{width:42px;height:42px;border-radius:11px;background:var(--s2);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;transition:all .3s}
 .wico.on{background:var(--limd);border-color:var(--limb)}
+.wico.mm{background:var(--ord);border-color:var(--orb)}
 .wlbl{font-size:11px;color:var(--mut);margin-bottom:2px}
 .wval{font-size:13px;font-weight:600;color:var(--sub);font-family:'JetBrains Mono',monospace}
 .wval.on{color:var(--lime)}
+.wval.mm{color:var(--orange)}
 
 .balblk{margin-bottom:18px}
 .ballbl{font-size:11px;color:var(--mut);margin-bottom:3px}
@@ -57,9 +60,12 @@ html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Spa
 .balunit{font-size:15px;font-weight:600;color:var(--lime)}
 .balusd{font-size:12px;color:var(--mut);margin-top:2px}
 
-.btn-c{width:100%;padding:12px;border-radius:10px;border:1px solid var(--limb);background:var(--limd);color:var(--lime);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;margin-bottom:7px}
+.btn-c{width:100%;padding:12px;border-radius:10px;border:1px solid var(--limb);background:var(--limd);color:var(--lime);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;margin-bottom:8px}
 .btn-c:hover{background:rgba(184,240,0,0.18);box-shadow:0 0 18px rgba(184,240,0,.1)}
 .btn-c:disabled{opacity:.5;cursor:not-allowed}
+.btn-mm{width:100%;padding:12px;border-radius:10px;border:1px solid var(--orb);background:var(--ord);color:var(--orange);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;margin-bottom:8px}
+.btn-mm:hover{background:rgba(247,147,26,0.18);box-shadow:0 0 18px rgba(247,147,26,.1)}
+.btn-mm:disabled{opacity:.5;cursor:not-allowed}
 .btn-g{width:100%;padding:10px;border-radius:10px;border:1px solid var(--b2);background:transparent;color:var(--mut);font-family:'Space Grotesk',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;display:none}
 .btn-g:hover{border-color:var(--red);color:var(--red)}
 
@@ -71,6 +77,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Spa
 .tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;font-size:12px;font-weight:600}
 .tg{background:var(--limd);color:var(--lime);border:1px solid var(--limb)}
 .tw{background:rgba(255,255,255,.05);color:var(--sub);border:1px solid var(--b2)}
+.to{background:var(--ord);color:var(--orange);border:1px solid var(--orb)}
 
 .vnodes{display:flex;gap:4px;margin-top:12px}
 .vn{flex:1;height:3px;border-radius:100px;background:var(--b2);transition:background .5s}
@@ -119,9 +126,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Spa
 .btnst{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-radius:9px;border:1px solid var(--b2);background:var(--s2);color:var(--sub);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s}
 .btnst:hover{border-color:var(--limb);color:var(--lime)}
 
-/* POINTS / CLAIM PANEL */
 .ptsrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.ptsleft{}
 .ptslbl{font-size:11px;color:var(--mut);margin-bottom:3px}
 .ptsnum{font-size:32px;font-weight:700;color:var(--lime);letter-spacing:-.02em}
 .ptsicon{width:44px;height:44px;border-radius:12px;background:var(--limd);border:1px solid var(--limb);display:flex;align-items:center;justify-content:center;font-size:20px}
@@ -150,7 +155,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Spa
 
 .bot{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-top:1px solid var(--b1);font-size:11px;color:var(--mut);max-width:680px;margin:16px auto 0}
 
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:rgba(18,18,18,.96);border:1px solid var(--b2);backdrop-filter:blur(16px);color:var(--txt);font-size:12px;font-weight:500;padding:9px 18px;border-radius:100px;z-index:999;transition:transform .3s cubic-bezier(.16,1,.3,1);white-space:nowrap}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:rgba(18,18,18,.96);border:1px solid var(--b2);backdrop-filter:blur(16px);color:var(--txt);font-size:12px;font-weight:500;padding:9px 18px;border-radius:100px;z-index:999;transition:transform .3s cubic-bezier(.16,1,.3,1);white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
 @media(max-width:520px){
@@ -169,7 +174,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Spa
   </div>
   <div class="tb-r">
     <div class="npill"><div class="ndot"></div>nodes responding</div>
-    <button class="wcbtn" id="tbw" onclick="connectWallet()">⬡ Connect Wallet</button>
+    <button class="wcbtn" id="tbw" onclick="scrollToWallet()">⬡ Connect Wallet</button>
   </div>
 </div>
 
@@ -183,7 +188,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Spa
 <div class="grid" style="padding:0 18px;max-width:716px">
 
   <!-- 01 Wallet -->
-  <div class="p">
+  <div class="p" id="walletPanel">
     <div class="pey"><span>Wallet</span><span class="n">01</span></div>
     <div class="wrow">
       <div class="wico" id="wico">👛</div>
@@ -194,9 +199,10 @@ html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Spa
     </div>
     <div class="balblk" id="balblk" style="display:none">
       <div class="ballbl">Balance</div>
-      <div class="balrow"><span class="balnum" id="balnum">125.4</span><span class="balunit">GEN</span></div>
+      <div class="balrow"><span class="balnum" id="balnum">125.4</span><span class="balunit" id="balunit">GEN</span></div>
       <div class="balusd" id="balusd">≈ $102.83 USD</div>
     </div>
+    <button class="btn-mm" id="mmbtn" onclick="connectMetaMask()">🦊 Connect MetaMask</button>
     <button class="btn-c" id="cbtn" onclick="connectWallet()">⬡ Connect Dummy Wallet</button>
     <button class="btn-g" id="dbtn" onclick="disconnectWallet()">Disconnect</button>
   </div>
@@ -254,11 +260,11 @@ html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Spa
     </div>
   </div>
 
-  <!-- 04 Claim Points (NEW) -->
+  <!-- 04 Claim Points -->
   <div class="p dk">
     <div class="pey"><span>Claim Points</span><span class="n">04</span></div>
     <div class="ptsrow">
-      <div class="ptsleft">
+      <div>
         <div class="ptslbl">Available Points</div>
         <div class="ptsnum" id="ptsnum">0</div>
       </div>
@@ -309,42 +315,28 @@ html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Spa
 <script>
 const CA="0x0D1A1f2889897cFCb440A194fedaeC131101E0E8";
 let conn=false,waddr='',bal=125.4,txrun=false,log=[];
-let points=0,txCount=0,claimed=0;
+let points=0,txCount=0,walletType='';
 
 const rA=()=>'0x'+Array.from({length:40},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
 const rH=()=>'0x'+Array.from({length:64},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
 const sh=a=>a.slice(0,6)+'...'+a.slice(-4);
 const slp=ms=>new Promise(r=>setTimeout(r,ms));
 
-function connectWallet(){
-  if(conn)return;
-  waddr=rA();conn=true;
-  const tb=document.getElementById('tbw');
-  tb.textContent='✓ '+sh(waddr);tb.classList.add('on');tb.onclick=null;
-  document.getElementById('wico').textContent='🔐';
-  document.getElementById('wico').classList.add('on');
-  document.getElementById('wval').textContent=sh(waddr);
-  document.getElementById('wval').classList.add('on');
-  document.getElementById('balblk').style.display='block';
-  updBal();
-  document.getElementById('cbtn').style.display='none';
-  document.getElementById('dbtn').style.display='block';
-  document.getElementById('elig').textContent='✓ Eligible';
-  document.getElementById('etok').textContent='105.3 GEN';
-  [1,2,3,4,5].forEach(i=>setTimeout(()=>document.getElementById('v'+i).classList.add('on'),i*160));
-  document.getElementById('txfa').textContent=sh(waddr);
-  document.getElementById('sbtn').disabled=false;
-  document.getElementById('sbtn').textContent='Send 1 GEN';
-
-  // Points system unlocks
-  points = 50; // connection bonus
-  updatePoints();
-  document.getElementById('claimStatus').classList.add('ready');
-  document.getElementById('claimStatusText').textContent='50 points ready to claim';
-  document.getElementById('claimBtn').disabled=false;
-
-  toast('Wallet connected · '+sh(waddr));
+function scrollToWallet(){
+  document.getElementById('walletPanel').scrollIntoView({behavior:'smooth',block:'center'});
 }
 
-function disconnectWallet(){
-  
+/* ===== DUMMY WALLET ===== */
+function connectWallet(){
+  if(conn)return;
+  waddr=rA();conn=true;walletType='dummy';
+  onWalletConnected();
+  toast('Dummy wallet connected · '+sh(waddr));
+}
+
+/* ===== REAL METAMASK CONNECT ===== */
+async function connectMetaMask(){
+  if(conn)return;
+
+  if(typeof window.ethereum === 'undefined'){
+    toast('MetaMask not found — install the extensio
