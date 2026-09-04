@@ -312,31 +312,6 @@ html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Spa
 
 <div class="toast" id="toast"></div>
 
-<script>
-const CA="0x0D1A1f2889897cFCb440A194fedaeC131101E0E8";
-let conn=false,waddr='',bal=125.4,txrun=false,log=[];
-let points=0,txCount=0,walletType='';
-
-const rA=()=>'0x'+Array.from({length:40},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
-const rH=()=>'0x'+Array.from({length:64},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
-const sh=a=>a.slice(0,6)+'...'+a.slice(-4);
-const slp=ms=>new Promise(r=>setTimeout(r,ms));
-
-function scrollToWallet(){
-  document.getElementById('walletPanel').scrollIntoView({behavior:'smooth',block:'center'});
-}
-
-/* ===== DUMMY WALLET ===== */
-function connectWallet(){
-  if(conn)return;
-  waddr=rA();conn=true;walletType='dummy';
-  onWalletConnected();
-  toast('Dummy wallet connected · '+sh(waddr));
-}
-
-/* ===== REAL METAMASK CONNECT ===== */
-async function connectMetaMask(){
-  if(conn)return;
-
-  if(typeof window.ethereum === 'undefined'){
-    toast('MetaMask not found — install the extensio
+<script src="script.js"></script>
+</body>
+</html>
