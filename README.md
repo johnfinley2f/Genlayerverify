@@ -1,63 +1,63 @@
 # GenlayerVerifyLayer
 
-A wallet-aware GenLayer contract preflight desk for builders. Validate an EVM contract address against a public page and reach strict consensus via GenLayer validators.
-
-## Live Demo
-
-🌐 **[View Live](https://johnfinley2f.github.io/genlayer-contract-verify)**
+An Intelligent Contract that performs **network-aware, AI-powered verification**
+of EVM addresses on GenLayer Studionet.
 
 ## Deployed Contract
 
-| Field | Value |
-|-------|-------|
-| Address | `0x0D1A1f2889897cFCb440A194fedaeC131101E0E8` |
-| Network | Asimov Mainnet |
-| Chain ID | `0x1A4` |
-| Validator Set | Bradbury Testnet |
+| Field            | Value                                        |
+|------------------|----------------------------------------------|
+| Contract Address | `0x84509cA0D2a676461a4966d0392f50e73c45C6a8` |
+| Network          | GenLayer Studionet                           |
+| Chain ID         | 61999                                        |
+| Deploy Tx        | `0xe6fd413aeef9c478e19f91673938405bdbd28d9d0bdd7913c8b106fd6542efaf` |
+| Status           | ACCEPTED ✅                                  |
 
-## Features
+## How it works
 
-- Injected EVM dummy wallet connect and disconnect flow
-- Account and chain ID detection
-- Bradbury Testnet, Asimov Mainnet, and Local Studio selector
-- EVM address validation and optional read-only eth_getCode check
-- Demo-only Prepare → Simulate → Consensus → Complete lifecycle
-- GenLayer Intelligent Contract for GenLayer Studio
-- Submission PDF and portal checklist
-- 1 GEN transaction simulation with full consensus flow
-- Transaction history tracking
+1. Caller calls `verify_contract("0xAddress")`
+2. Contract calls **live Studionet RPC** (`eth_getCode`) via `gl.get_webpage()`
+   — fetches real bytecode, not caller-supplied data
+3. AI validator writes a factual verdict from the bytecode evidence
+   via `gl.exec_prompt()`
+4. Result stored on-chain after **5-validator consensus**
 
-## Run Locally
+Every validator runs the RPC call independently.
+Fake results are impossible — consensus fails if validators disagree.
 
-```bash
-# Just open index.html in browser — no build needed!
-open index.html
-```
+## Public Methods
 
-## Repository Map
+### Write
+| Method | Params | Description |
+|--------|--------|-------------|
+| `verify_contract` | `address: str` | Runs full verification, stores result |
 
-```
-index.html                  Main frontend app
-contracts/
-  GenlayerVerifyLayer.py    GenLayer Studio contract
-src/
-  config.ts                 Contract address config
-docs/
-  SUBMISSION.md             Reviewer-facing submission packet
-```
+### Read (free, no gas)
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `get_last_result` | `str` | Address + status + AI verdict |
+| `get_verdict` | `str` | AI verdict only |
+| `is_deployed` | `bool` | True if bytecode found at address |
+| `get_total_checks` | `u32` | Total verifications completed |
 
-## GenLayer Studio
+## Test it in Studio
 
-Open [studio.genlayer.com](https://studio.genlayer.com), paste contract address:
+1. Open [studio.genlayer.com](https://studio.genlayer.com)
+2. Connect to **GenLayer Studio** (chain 61999)
+3. Go to contract: `0x84509cA0D2a676461a4966d0392f50e73c45C6a8`
+4. Call `verify_contract("0x84509cA0D2a676461a4966d0392f50e73c45C6a8")`
+   (verifies itself!)
+5. Call `get_last_result()` to read the on-chain verdict
 
-```
-0x0D1A1f2889897cFCb440A194fedaeC131101E0E8
-```
+## Why this qualifies as an Intelligent Contract
 
-## Safety
+- `gl.get_webpage()` makes a **live network call** — data comes from
+  the blockchain, not from the caller
+- `gl.exec_prompt()` produces an **AI-written verdict** from real evidence
+- **5 validators** verify independently — consensus required to write storage
+- Caller cannot manipulate the result by passing fake data
 
-The browser demo never calls `eth_sendTransaction`, requests a signature, or moves funds.
+## Repository
 
-## Submission
-
-See [docs/SUBMISSION.md](docs/SUBMISSION.md) for the final GitHub and GenLayer Builder submission checklist.
+This repo contains only the Intelligent Contract.
+Submitted under **Intelligent Contracts** category.
