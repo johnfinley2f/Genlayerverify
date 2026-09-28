@@ -21,24 +21,12 @@ GenlayerVerifyLayer is a GenLayer Intelligent Contract that takes any EVM addres
 
 ## How it works
 
-verify_contract(address)
-│
-├── Source 1: eth_getCode via live RPC
-│   → Is there real bytecode at this address?
-│
-├── Source 2: GenLayer Studio Explorer page
-│   → Does this address appear on the explorer?
-│
-├── Source 3: eth_getTransactionCount via live RPC
-│   → Has this address ever sent a transaction?
-│
-└── AI Analysis (gl.exec_prompt)
-→ contract_type  (ERC-20 / ERC-721 / ERC-1155 / Custom / EOA / Unknown)
-→ trust_score    (0–100)
-→ verdict        (one factual sentence, max 25 words)
-│
-└── Stored permanently in TreeMap
-after 5-validator consensus
+1. `verify_contract(address)` call karo
+2. Source 1 — `eth_getCode` via live RPC → bytecode present hai ya nahi?
+3. Source 2 — GenLayer Studio Explorer page → address explorer pe hai ya nahi?
+4. Source 3 — `eth_getTransactionCount` via live RPC → address active hai ya nahi?
+5. AI Analysis via `gl.exec_prompt` → contract_type, trust_score (0-100), verdict
+6. Result stored permanently in TreeMap after 5-validator consensus
 
 ## Trust Score Guide
 
