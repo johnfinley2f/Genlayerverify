@@ -4,13 +4,16 @@ An Intelligent Contract that performs 3-source, AI-powered trust scoring of EVM 
 
 ## Deployed Contract
 
-| Field            | Value                                                                 |
-|------------------|-----------------------------------------------------------------------|
-| Contract Address | `0x84509cA0D2a676461a4966d0392f50e73c45C6a8`                         |
-| Network          | GenLayer Studionet                                                    |
-| Chain ID         | 61999                                                                 |
-| Deploy Tx        | `0xe6fd413aeef9c478e19f91673938405bdbd28d9d0bdd7913c8b106fd6542efaf` |
-| Status           | ACCEPTED ✅                                                           |
+| Field            | Value |
+|------------------|-------|
+| Contract Address | `0x2A89B86Fe8B95Ccd72C435F3812d976822B7A9AC` |
+| Network          | GenLayer Studionet |
+| Chain ID         | 61999 |
+| Status           | FINALIZED ✅ |
+
+[View Contract on Explorer](https://explorer-studio.genlayer.com/address/0x2A89B86Fe8B95Ccd72C435F3812d976822B7A9AC)
+
+[View Deploy Transaction](https://explorer-studio.genlayer.com/tx/0x7de7d2b04bcd0f7db91cf80fb8d919cf9e5bd99d9a8187c899bd4df1d08a40f5)
 
 ## What is this?
 
@@ -23,8 +26,8 @@ verify_contract(address)
 ├── Source 1: eth_getCode via live RPC
 │   → Is there real bytecode at this address?
 │
-├── Source 2: GenLayer Explorer API
-│   → Is this address in the verified contracts registry?
+├── Source 2: GenLayer Studio Explorer page
+│   → Does this address appear on the explorer?
 │
 ├── Source 3: eth_getTransactionCount via live RPC
 │   → Has this address ever sent a transaction?
@@ -57,8 +60,8 @@ after 5-validator consensus
 
 ### Write
 
-| Method            | Params         | Description                                              |
-|-------------------|----------------|----------------------------------------------------------|
+| Method            | Params         | Description                                               |
+|-------------------|----------------|-----------------------------------------------------------|
 | `verify_contract` | `address: str` | Runs 3-source verification, stores result after consensus |
 
 ### Read (no gas)
@@ -75,35 +78,36 @@ after 5-validator consensus
 
 ## Storage Design
 
-class VerificationRecord(gl.Record):
-address:            str    # verified EVM address
-has_bytecode:       bool   # eth_getCode returned non-empty
-bytecode_size:      u32    # size in bytes
-explorer_confirmed: bool   # found in explorer registry
-is_active:          bool   # nonce > 0
-contract_type:      str    # AI classification
-trust_score:        u32    # 0-100
-ai_verdict:         str    # AI one-sentence verdict
-checked_at:         u32    # block timestamp
-records: TreeMap[str, VerificationRecord]  # permanent history
+Each address maps to a JSON string in TreeMap:
+{
+"address":            "0x...",
+"has_bytecode":       true/false,
+"bytecode_size":      1234,
+"explorer_confirmed": true/false,
+"is_active":          true/false,
+"contract_type":      "Custom",
+"trust_score":        92,
+"ai_verdict":         "This address holds a deployed GenLayer contract confirmed on explorer.",
+"checked_at":         1727123456
+}
 
 All records are permanent and publicly queryable — any address verified once can be looked up by anyone forever.
 
 ## Test it in Studio
 
-1. Open studio.genlayer.com
+1. Open [studio.genlayer.com](https://studio.genlayer.com)
 2. Connect to GenLayer Studio (chain 61999)
-3. Open contract 0x84509cA0D2a676461a4966d0392f50e73c45C6a8
-4. Call verify_contract("0x84509cA0D2a676461a4966d0392f50e73c45C6a8")
+3. Open contract [0x2A89B86Fe8B95Ccd72C435F3812d976822B7A9AC](https://explorer-studio.genlayer.com/address/0x2A89B86Fe8B95Ccd72C435F3812d976822B7A9AC)
+4. Call `verify_contract("0x2A89B86Fe8B95Ccd72C435F3812d976822B7A9AC")`
 5. Wait for consensus
-6. Call get_record("0x84509cA0D2a676461a4966d0392f50e73c45C6a8") to read the result
+6. Call `get_record("0x2A89B86Fe8B95Ccd72C435F3812d976822B7A9AC")` to read result
 
 ## Why this qualifies as an Intelligent Contract
 
-- Uses gl.get_webpage() to make 3 live network calls — no static or caller-supplied data
-- Uses gl.exec_prompt() for AI classification and trust scoring from real evidence
-- Uses gl.eq_principle_strict_eq and gl.eq_principle_prompt_comparative for proper consensus
-- TreeMap storage — permanent history, anyone can query any past address
+- Uses `gl.get_webpage()` to make 3 live network calls — no static or caller-supplied data
+- Uses `gl.exec_prompt()` for AI classification and trust scoring from real evidence
+- Uses `gl.eq_principle_strict_eq` and `gl.eq_principle_prompt_comparative` for proper consensus
+- TreeMap permanent history — anyone can query any past address
 - 5 validators run independently — result is authoritative, not gameable
 
 ## Repository
