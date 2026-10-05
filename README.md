@@ -28,10 +28,10 @@ AI is used only to classify the contract type and provide an informational score
 ## How it works
 
 1. `verify_contract(address)` call karo
-2. Source 1 - `eth_getCode` via live RPC — bytecode present?
-3. Source 2 - GenLayer Studio Explorer page — address confirmed?
-4. Source 3 - `eth_getTransactionCount` via live RPC — address active?
-5. Trust decision - `has_bytecode AND explorer_confirmed` — fully deterministic
+2. Source 1 - `eth_getCode` via live RPC - bytecode present?
+3. Source 2 - GenLayer Studio Explorer page - address confirmed?
+4. Source 3 - `eth_getTransactionCount` via live RPC - address active?
+5. Trust decision - `has_bytecode AND explorer_confirmed` - fully deterministic
 6. AI analysis - contract type + informational score (10, 40, 70, or 90 only)
 7. Result stored permanently in TreeMap after 5-validator consensus
 
@@ -54,9 +54,9 @@ AI score is clamped to exactly one of these 4 values — it cannot cross any thr
 
 ## Why consensus is guaranteed
 
-- All 3 sources use `gl.eq_principle_strict_eq` — validators must return identical raw data
-- Trust decision is pure boolean logic on deterministic data — no AI involvement
-- AI score is forced to 4 fixed values only — no ambiguous ranges
+- All 3 sources use `gl.eq_principle_strict_eq` - validators must return identical raw data
+- Trust decision is pure boolean logic on deterministic data - no AI involvement
+- AI score is forced to 4 fixed values only - no ambiguous ranges
 - If any validator gets different data, consensus fails and nothing is stored
 
 ## Methods
@@ -71,30 +71,32 @@ AI score is clamped to exactly one of these 4 values — it cannot cross any thr
 
 | Method | Params | Returns | Description |
 |--------|--------|---------|-------------|
-| `get_record` | `address: str` | `str` | Full record — all fields |
+| `get_record` | `address: str` | `str` | Full record - all fields |
 | `get_trust_score` | `address: str` | `u32` | Informational score: 10, 40, 70, or 90 |
 | `get_verdict` | `address: str` | `str` | AI verdict sentence |
 | `get_contract_type` | `address: str` | `str` | ERC-20 / ERC-721 / Custom / EOA |
 | `is_trusted` | `address: str` | `bool` | True if bytecode AND explorer confirmed |
-| `get_total_verified` | — | `u32` | Total verifications completed |
-| `get_last_address` | — | `str` | Last verified address |
+| `get_total_verified` | - | `u32` | Total verifications completed |
+| `get_last_address` | - | `str` | Last verified address |
 
 ## Storage Design
 
 Each address maps to a JSON string in TreeMap:
 
+```json
 {
-"address":            "0x...",
-"has_bytecode":       true/false,
-"bytecode_size":      1234,
-"explorer_confirmed": true/false,
-"is_active":          true/false,
-"is_trusted":         true/false,
-"contract_type":      "Custom",
-"trust_score":        90,
-"ai_verdict":         "This address holds a verified GenLayer Intelligent Contract.",
-"checked_at":         1727123456
+  "address":            "0x...",
+  "has_bytecode":       true/false,
+  "bytecode_size":      1234,
+  "explorer_confirmed": true/false,
+  "is_active":          true/false,
+  "is_trusted":         true/false,
+  "contract_type":      "Custom",
+  "trust_score":        90,
+  "ai_verdict":         "This address holds a verified GenLayer Intelligent Contract.",
+  "checked_at":         1727123456
 }
+```
 
 All records are permanent and publicly queryable.
 
