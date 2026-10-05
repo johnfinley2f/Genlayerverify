@@ -7,11 +7,8 @@ STUDIONET_RPC = "https://studio.genlayer.com/api"
 EXPLORER_API  = "https://explorer-studio.genlayer.com"
 
 class GenlayerVerifyLayer(gl.Contract):
-    # Storage fields
     total_verified: u32
     last_address:   str
-
-    # Per-address records stored as JSON strings in TreeMap
     records: TreeMap[str, str]
 
     def __init__(self):
@@ -26,11 +23,7 @@ class GenlayerVerifyLayer(gl.Contract):
             "id":      1,
         })
         try:
-            raw = gl.get_webpage(
-                STUDIONET_RPC,
-                method="POST",
-                payload=body
-            )
+            raw = gl.get_webpage(STUDIONET_RPC, method="POST", payload=body)
             return json.loads(raw).get("result", "")
         except Exception:
             return ""
@@ -42,15 +35,15 @@ class GenlayerVerifyLayer(gl.Contract):
 
         addr_lower = address.lower()
 
-        # Source 1: eth_getCode — bytecode check
+        # Source 1: eth_getCode — deterministic
         def fetch_bytecode() -> str:
             return self._rpc("eth_getCode", [address, "latest"])
 
-        bytecode     = gl.eq_principle_strict_eq(fetch_bytecode)
-        has_bytecode = len(bytecode) > 4
+        bytecode      = gl.eq_principle_strict_eq(fetch_bytecode)
+        has_bytecode  = len(bytecode) > 4
         bytecode_size = (len(bytecode) - 2) // 2 if has_bytecode else 0
 
-        # Source 2: Explorer page — registry check
+        # Source 2: Explorer — deterministic
         def fetch_explorer() -> str:
             url = f"{EXPLORER_API}/address/{address}"
             return gl.get_webpage(url)
@@ -58,7 +51,7 @@ class GenlayerVerifyLayer(gl.Contract):
         explorer_raw       = gl.eq_principle_strict_eq(fetch_explorer)
         explorer_confirmed = addr_lower in explorer_raw.lower()
 
-        # Source 3: eth_getTransactionCount — activity check
+        # Source 3: eth_getTransactionCount — deterministic
         def fetch_nonce() -> str:
             return self._rpc("eth_getTransactionCount", [address, "latest"])
 
@@ -68,31 +61,33 @@ class GenlayerVerifyLayer(gl.Contract):
         except Exception:
             is_active = False
 
-        # AI Analysis
+        # Trust decision — fully deterministic, no AI involvement
+        # bytecode AND explorer both confirmed = trusted
+        is_trusted = has_bytecode and explorer_confirmed
+
+        # AI verdict — informational only, does NOT affect trust decision
         evidence = (
             f"Address: {address}\n"
             f"Network: GenLayer Studionet (chain 61999)\n"
             f"Source 1 — eth_getCode: "
             f"{'bytecode present, ' + str(bytecode_size) + ' bytes' if has_bytecode else 'empty — no contract'}\n"
-            f"Source 2 — Explorer page: "
-            f"{'address found on explorer' if explorer_confirmed else 'not found'}\n"
+            f"Source 2 — Explorer: "
+            f"{'address confirmed on explorer' if explorer_confirmed else 'not found on explorer'}\n"
             f"Source 3 — Transaction count: "
             f"{'active (nonce > 0)' if is_active else 'no outgoing transactions'}\n"
+            f"Deterministic trust decision: {'TRUSTED' if is_trusted else 'NOT TRUSTED'}\n"
         )
 
         def ai_analysis() -> str:
             return gl.exec_prompt(
-                "You are an expert blockchain contract analyst.\n"
+                "You are a blockchain contract analyst.\n"
                 "Based ONLY on the evidence below, return a JSON object with "
                 "exactly these three keys:\n"
                 "  contract_type: one of [ERC-20, ERC-721, ERC-1155, Custom, EOA, Unknown]\n"
-                "  trust_score: integer 0-100\n"
+                "  trust_score: integer, MUST be exactly one of [10, 40, 70, 90] — "
+                "pick based on: nothing confirmed=10, bytecode only=40, "
+                "bytecode+explorer=70, bytecode+explorer+active=90\n"
                 "  verdict: one factual sentence, max 25 words\n"
-                "Scoring:\n"
-                "  bytecode + explorer + active = 85-100\n"
-                "  bytecode + explorer          = 65-84\n"
-                "  bytecode only                = 35-64\n"
-                "  nothing confirmed            = 0-34\n"
                 "Return ONLY valid JSON, no extra text.\n\n"
                 f"Evidence:\n{evidence}"
             )
@@ -103,20 +98,23 @@ class GenlayerVerifyLayer(gl.Contract):
             clean   = ai_raw.strip().strip("```json").strip("```").strip()
             ai_data = json.loads(clean)
             c_type  = str(ai_data.get("contract_type", "Unknown"))
-            t_score = min(100, max(0, int(ai_data.get("trust_score", 0))))
+            t_score = int(ai_data.get("trust_score", 10))
+            # Clamp to allowed values only
+            allowed = [10, 40, 70, 90]
+            t_score = min(allowed, key=lambda x: abs(x - t_score))
             verdict = str(ai_data.get("verdict", ai_raw[:120]))
         except Exception:
             c_type  = "Unknown"
-            t_score = 0
+            t_score = 10
             verdict = ai_raw[:120]
 
-        # Store as JSON string
         record = json.dumps({
             "address":            address,
             "has_bytecode":       has_bytecode,
             "bytecode_size":      bytecode_size,
             "explorer_confirmed": explorer_confirmed,
             "is_active":          is_active,
+            "is_trusted":         is_trusted,
             "contract_type":      c_type,
             "trust_score":        t_score,
             "ai_verdict":         verdict,
@@ -136,11 +134,12 @@ class GenlayerVerifyLayer(gl.Contract):
             r = json.loads(raw)
             return (
                 f"Address:   {r['address']}\n"
+                f"Trusted:   {'YES' if r['is_trusted'] else 'NO'}\n"
                 f"Type:      {r['contract_type']}\n"
                 f"Bytecode:  {'YES (' + str(r['bytecode_size']) + ' bytes)' if r['has_bytecode'] else 'NO'}\n"
                 f"Explorer:  {'Confirmed' if r['explorer_confirmed'] else 'Not found'}\n"
                 f"Active:    {'Yes' if r['is_active'] else 'No'}\n"
-                f"Trust:     {r['trust_score']}/100\n"
+                f"Score:     {r['trust_score']}/100 (informational)\n"
                 f"Verdict:   {r['ai_verdict']}\n"
                 f"Checked:   {r['checked_at']}"
             )
@@ -183,7 +182,7 @@ class GenlayerVerifyLayer(gl.Contract):
         if raw is None:
             return False
         try:
-            return int(json.loads(raw).get("trust_score", 0)) >= 70
+            return bool(json.loads(raw).get("is_trusted", False))
         except Exception:
             return False
 
